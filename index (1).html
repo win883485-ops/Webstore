@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cortex Vault – private cloud storage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0d1115;--slate:#151b21;--slate2:#1d252d;--line:#2a343e;--fog:#aebfc7;--paper:#e9eff1;--mute:#8b9aa3;--red:#ff3030;--redglow:rgba(255,48,48,.35)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--paper);font:16px/1.55 Manrope,system-ui,sans-serif}
+h1,h2,h3{font-family:Syne,system-ui,sans-serif;margin:0;letter-spacing:-.02em}
+a{color:inherit}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+[hidden]{display:none!important}
+
+/* nav */
+.nav{position:fixed;inset:0 0 auto;z-index:20;display:flex;align-items:center;gap:14px;padding:14px clamp(16px,4vw,48px);background:linear-gradient(#0d1115e6,#0d111500)}
+.logo{width:38px;height:38px;border-radius:50%;background:url(wallpaper.jpg) 50% 57%/330% auto;box-shadow:0 0 0 2px var(--line),0 0 18px var(--redglow)}
+.brand{font:800 19px Syne,sans-serif;letter-spacing:-.01em}
+.sp{flex:1}
+.who{display:flex;align-items:center;gap:10px;color:var(--fog);font-size:14px}
+.who img{width:30px;height:30px;border-radius:50%}
+.btn{border:1px solid var(--line);background:var(--slate2);border-radius:999px;padding:9px 18px;cursor:pointer;font-weight:500}
+.btn:hover{border-color:var(--fog)}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff;font-weight:700;box-shadow:0 6px 28px var(--redglow)}
+.btn.red:hover{filter:brightness(1.08)}
+.btn.sm{padding:5px 12px;font-size:13px}
+
+/* hero */
+.hero{min-height:100svh;display:flex;align-items:flex-end;padding:120px clamp(20px,6vw,90px) clamp(40px,9vh,90px);
+ background:linear-gradient(90deg,#0d1115f2 0%,#0d1115b8 42%,#0d111522 100%),linear-gradient(0deg,#0d1115 0%,#0d111500 40%),url(wallpaper.jpg) 50% 30%/cover}
+.hero div{max-width:640px}
+.hero h1{font-size:clamp(40px,7.4vw,92px);line-height:.98;font-weight:800}
+.hero p{color:var(--fog);font-size:18px;max-width:46ch;margin:22px 0 30px}
+.hero .fine{font-size:13px;color:var(--mute);margin:16px 0 0}
+.setup{margin-top:22px;padding:14px 16px;border:1px solid var(--red);border-radius:12px;background:#ff303014;font-size:14px;max-width:52ch}
+
+/* app */
+.app{padding:96px clamp(16px,4vw,48px) 60px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;max-width:1280px;margin:0 auto}
+@media(max-width:900px){.app{grid-template-columns:1fr}.side{order:-1}}
+.panel{background:var(--slate);border:1px solid var(--line);border-radius:18px;padding:20px}
+.side{display:flex;flex-direction:column;gap:16px;align-self:start;position:sticky;top:84px}
+@media(max-width:900px){.side{position:static}}
+.side h3{font-size:16px;margin-bottom:12px}
+.row{display:flex;gap:8px}
+input[type=text],input[type=url]{width:100%;background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:11px 14px}
+.seg{display:flex;gap:6px;margin-top:10px}
+.seg button{flex:1;background:var(--ink);border:1px solid var(--line);border-radius:10px;padding:6px;cursor:pointer;color:var(--mute);font-size:13px}
+.seg button.on{color:var(--paper);border-color:var(--fog)}
+.meter{height:6px;border-radius:9px;background:var(--ink);overflow:hidden;margin:10px 0 6px}
+.meter i{display:block;height:100%;width:0;background:var(--red);box-shadow:0 0 12px var(--redglow);transition:width .3s}
+.mute{color:var(--mute);font-size:13px}
+.msg{min-height:22px;font-size:14px;color:#ff8a8a;margin:8px 0 0}
+.drop{border:1.5px dashed var(--line);border-radius:16px;padding:34px 16px;text-align:center;color:var(--mute);cursor:pointer;transition:.2s}
+.drop.over,.drop:hover{border-color:var(--red);color:var(--paper);background:#ff30300d}
+.drop b{display:block;color:var(--paper);font:700 18px Syne,sans-serif;margin-bottom:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin-top:20px}
+.card{background:var(--slate2);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.thumb{aspect-ratio:4/3;background:var(--ink);display:grid;place-items:center;color:var(--mute);font:800 22px Syne,sans-serif;overflow:hidden}
+.thumb img,.thumb video{width:100%;height:100%;object-fit:cover}
+.meta{padding:10px 12px 12px}
+.name{font-weight:700;font-size:14px;word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.acts{display:flex;gap:6px;margin-top:10px}
+.tabs{display:flex;gap:8px;align-items:center;margin:18px 0 0}
+.tabs button{background:none;border:0;border-bottom:2px solid transparent;color:var(--mute);padding:6px 4px;margin-right:10px;cursor:pointer;font-weight:700}
+.tabs button.on{color:var(--paper);border-color:var(--red)}
+.tabs .btn{margin-left:auto;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--paper)}
+.empty{padding:40px 10px;text-align:center;color:var(--mute)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="logo" role="img" aria-label="Logo"></div>
+  <span class="brand">Cortex Vault</span>
+  <span class="sp"></span>
+  <div class="who" id="who" hidden><img id="avatar" alt=""><span id="uname"></span><button class="btn sm" id="out">Sign out</button></div>
+</nav>
+
+<header class="hero" id="hero">
+  <div>
+    <h1>Your files. Your account. Nobody else’s.</h1>
+    <p>Upload videos, photos, documents, anything. Sign in with Google from any device and everything is waiting for you. Sign out and it’s locked.</p>
+    <button class="btn red" id="in">Continue with Google</button>
+    <p class="fine">Up to 15 uploads per day, per account. Download any file whenever you want. Deleted files wait in trash for 30 days.</p>
+    <div class="setup" id="setup" hidden><b>Setup needed.</b> Paste your Firebase config into index.html, then reload. Steps are in README.md.</div>
+  </div>
+</header>
+
+<main class="app" id="app" hidden>
+  <section>
+    <div class="panel">
+      <div class="drop" id="drop" tabindex="0" role="button"><b>Add files</b>Tap to choose, or drop them here</div>
+      <input type="file" id="pick" multiple hidden>
+      <p class="msg" id="msg"></p>
+      <div class="tabs" id="tabs"><button class="on" data-v="files">Files</button><button data-v="trash">Trash <span id="tc"></span></button><button class="btn" id="empty" hidden>Empty trash</button></div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <aside class="side">
+    <div class="panel">
+      <h3>Search Google</h3>
+      <form id="gform" class="row"><input type="text" id="gq" placeholder="Search anything…" aria-label="Search Google"><button class="btn red" type="submit">Search</button></form>
+      <div class="seg" id="seg"><button type="button" class="on" data-m="">Web</button><button type="button" data-m="isch">Images</button><button type="button" data-m="vid">Videos</button></div>
+      <p class="mute" style="margin:10px 0 0">Results open in a new tab. Download what you find, then add it here.</p>
+    </div>
+    <div class="panel">
+      <h3>Save from a link</h3>
+      <form id="lform" class="row"><input type="url" id="lurl" placeholder="https://…/file.mp4" aria-label="File link"><button class="btn" type="submit">Save</button></form>
+      <p class="mute" style="margin:10px 0 0">Works when the site allows it. If not, download the file and upload it instead.</p>
+    </div>
+    <div class="panel">
+      <h3>Today</h3>
+      <div class="meter"><i id="bar"></i></div>
+      <div class="mute" id="count">0 of 15 uploads used</div>
+    </div>
+  </aside>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script>
+// 1) PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps > Web app)
+var cfg={
+  apiKey:"PASTE_API_KEY",
+  authDomain:"PASTE_PROJECT.firebaseapp.com",
+  projectId:"PASTE_PROJECT",
+  storageBucket:"PASTE_PROJECT.firebasestorage.app",
+  messagingSenderId:"PASTE_SENDER_ID",
+  appId:"PASTE_APP_ID"
+};
+var LIMIT=15; // keep in sync with firestore.rules
+
+var $=function(s){return document.querySelector(s)};
+var auth,fs,st,user,unsubF,unsubD,mode='',busy=false;
+var ok=cfg.apiKey.indexOf('PASTE')!==0;
+if(ok){firebase.initializeApp(cfg);auth=firebase.auth();fs=firebase.firestore();st=firebase.storage()}
+else $('#setup').hidden=false;
+
+function dayKey(){var d=new Date();return d.getUTCFullYear()+'-'+(d.getUTCMonth()+1)+'-'+d.getUTCDate()} // UTC, matches the rules
+function say(t){$('#msg').textContent=t||''}
+function fmt(n){return n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB'}
+function mk(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+
+$('#in').onclick=function(){
+  if(!ok)return;
+  var p=new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(p).catch(function(){auth.signInWithRedirect(p)});
+};
+$('#out').onclick=function(){auth.signOut()};
+
+if(ok)auth.onAuthStateChanged(function(u){
+  user=u;
+  if(unsubF){unsubF();unsubF=null}
+  if(unsubD){unsubD();unsubD=null}
+  $('#hero').hidden=!!u;$('#app').hidden=!u;$('#who').hidden=!u;
+  if(!u){docs=[];$('#grid').textContent='';return}
+  $('#uname').textContent=u.displayName||u.email;
+  $('#avatar').src=u.photoURL||'';
+  var base=fs.collection('users').doc(u.uid);
+  unsubF=base.collection('files').orderBy('created','desc').onSnapshot(function(sn){docs=sn.docs;sweep();draw()},function(){say('Couldn’t load your files.')});
+  unsubD=base.collection('days').doc(dayKey()).onSnapshot(function(s){
+    var n=s.exists?s.data().count:0;
+    $('#bar').style.width=(n/LIMIT*100)+'%';
+    $('#count').textContent=n+' of '+LIMIT+' uploads used';
+  });
+});
+
+var docs=[],view='files',KEEP=30*86400000;
+function pathOf(d){return 'users/'+user.uid+'/'+d.id}
+function trashIt(d){d.ref.update({trashed:true,trashedAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(){say('Couldn’t move that file to trash.')})}
+function restore(d){d.ref.update({trashed:false,trashedAt:firebase.firestore.FieldValue.delete()}).catch(function(){say('Couldn’t restore that file.')})}
+function purge(d){return st.ref(pathOf(d)).delete().catch(function(){}).then(function(){return d.ref.delete()}).catch(function(){say('Couldn’t delete that file.')})}
+function sweep(){ // files in trash for more than 30 days are removed for good
+  docs.forEach(function(d){var t=d.data().trashedAt;if(d.data().trashed&&t&&t.toMillis&&Date.now()-t.toMillis()>KEEP)purge(d)});
+}
+function draw(){
+  var g=$('#grid');g.textContent='';
+  var trash=view==='trash';
+  var inTrash=docs.filter(function(d){return d.data().trashed});
+  var list=trash?inTrash:docs.filter(function(d){return !d.data().trashed});
+  $('#tc').textContent=inTrash.length?'('+inTrash.length+')':'';
+  $('#empty').hidden=!(trash&&list.length);
+  if(!list.length){g.appendChild(mk('div','empty',trash?'Trash is empty. Deleted files stay here for 30 days.':'No files yet. Add your first one.'));return}
+  list.forEach(function(d){
+    var f=d.data();
+    var card=mk('div','card'),th=mk('div','thumb',(f.name.split('.').pop()||'file').slice(0,4).toUpperCase());
+    var meta=mk('div','meta');
+    meta.appendChild(mk('div','name',f.name));
+    meta.appendChild(mk('div','mute',fmt(f.size)));
+    var acts=mk('div','acts');
+    if(trash){
+      var rs=mk('button','btn sm','Restore'),fv=mk('button','btn sm','Delete forever');
+      rs.onclick=function(){restore(d)};
+      fv.onclick=function(){if(confirm('Delete '+f.name+' forever? This can’t be undone.'))purge(d)};
+      acts.append(rs,fv);
+    }else{
+      var dl=mk('button','btn sm','Download'),rm=mk('button','btn sm','Trash');
+      dl.onclick=function(){st.ref(pathOf(d)).getDownloadURL().then(function(u){window.open(u,'_blank')},function(){say('Couldn’t get that file.')})};
+      rm.onclick=function(){trashIt(d)};
+      acts.append(dl,rm);
+    }
+    meta.appendChild(acts);card.append(th,meta);g.appendChild(card);
+    if(/^(image|video)\//.test(f.type)&&f.size<60*1048576){
+      st.ref(pathOf(d)).getDownloadURL().then(function(u){
+        var el=f.type.indexOf('image')===0?mk('img'):mk('video');
+        el.src=u;if(el.tagName==='VIDEO'){el.muted=true;el.preload='metadata'}
+        th.textContent='';th.appendChild(el);
+      }).catch(function(){});
+    }
+  });
+}
+$('#tabs').onclick=function(e){
+  var v=e.target.dataset&&e.target.dataset.v;if(!v)return;
+  view=v;[].forEach.call(this.querySelectorAll('[data-v]'),function(b){b.classList.toggle('on',b.dataset.v===v)});draw();
+};
+$('#empty').onclick=function(){
+  var t=docs.filter(function(d){return d.data().trashed});
+  if(t.length&&confirm('Delete '+t.length+' file'+(t.length>1?'s':'')+' forever? This can’t be undone.'))t.forEach(purge);
+};
+
+// One upload = reserve a slot (rules enforce 15/day), then send the bytes (rules require the slot).
+async function upload(file){
+  var base=fs.collection('users').doc(user.uid),day=dayKey();
+  var dref=base.collection('days').doc(day),fref=base.collection('files').doc();
+  var s=await dref.get(),n=s.exists?s.data().count:0;
+  if(n>=LIMIT)throw new Error('limit');
+  var b=fs.batch();
+  b.set(fref,{name:file.name,size:file.size,type:file.type||'application/octet-stream',day:day,created:firebase.firestore.FieldValue.serverTimestamp()});
+  b.set(dref,{count:n+1});
+  await b.commit();
+  try{
+    await new Promise(function(res,rej){
+      var t=st.ref('users/'+user.uid+'/'+fref.id).put(file,{contentType:file.type||'application/octet-stream'});
+      t.on('state_changed',function(x){say('Uploading '+file.name+' · '+Math.round(x.bytesTransferred/x.totalBytes*100)+'%')},rej,res);
+    });
+  }catch(e){await fref.delete().catch(function(){});throw e}
+}
+async function addAll(list){
+  if(busy||!user)return;busy=true;say('');
+  var a=[].slice.call(list);
+  for(var i=0;i<a.length;i++){
+    try{await upload(a[i])}
+    catch(e){say(e.message==='limit'||/permission/i.test(e.message)?'Daily limit reached. Come back tomorrow.':'Upload failed for '+a[i].name+'.');break}
+  }
+  if(!$('#msg').textContent.match(/limit|failed/))say('');
+  busy=false;
+}
+
+var drop=$('#drop'),pick=$('#pick');
+drop.onclick=function(){pick.click()};
+drop.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();pick.click()}};
+pick.onchange=function(){addAll(pick.files);pick.value=''};
+['dragover','dragleave','drop'].forEach(function(n){drop.addEventListener(n,function(e){
+  e.preventDefault();drop.classList.toggle('over',n==='dragover');
+  if(n==='drop')addAll(e.dataTransfer.files);
+})});
+
+// Google search (opens in a new tab: Google doesn’t allow being embedded)
+$('#seg').onclick=function(e){
+  var m=e.target.dataset&&e.target.dataset.m;if(m===undefined)return;
+  mode=m;[].forEach.call(this.children,function(b){b.classList.toggle('on',b.dataset.m===m)});
+};
+$('#gform').onsubmit=function(e){
+  e.preventDefault();var q=$('#gq').value.trim();if(!q)return;
+  window.open('https://www.google.com/search?q='+encodeURIComponent(q)+(mode?'&tbm='+mode:''),'_blank','noopener');
+};
+
+// Save from link (needs the other site to allow cross-origin downloads)
+$('#lform').onsubmit=async function(e){
+  e.preventDefault();var u=$('#lurl').value.trim();if(!u||busy)return;
+  say('Fetching…');
+  try{
+    var r=await fetch(u);if(!r.ok)throw 0;
+    var b=await r.blob(),nm=decodeURIComponent((new URL(u).pathname.split('/').pop())||'download');
+    $('#lurl').value='';
+    await addAll([new File([b],nm,{type:b.type})]);
+  }catch(err){say('That site doesn’t allow saving directly. Download the file, then upload it here.')}
+};
+</script>
+</body>
+</html>
